@@ -56,6 +56,7 @@ public class ChatUtil {
     public static void printCredits() {
         String version = ModList.get().getModContainerById(TranslationMod.MODID).get().getModInfo().getVersion().toString();
         ChatUtil.printChatMessage(false, "Real-time translation mod by Ringosham. Version " + version, ChatFormatting.AQUA);
+        ChatUtil.printChatMessage(false, "Transplanted to 1.18.2. --By LostInLinearPast(一只戏鸢)", ChatFormatting.AQUA);
         ChatUtil.printChatMessage(false, "Online translation services powered by Google", ChatFormatting.AQUA);
         ChatUtil.printChatMessage(false, "Translation results may not be 100% accurate", ChatFormatting.AQUA);
     }
