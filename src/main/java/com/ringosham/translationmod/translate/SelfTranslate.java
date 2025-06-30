@@ -21,6 +21,7 @@ import com.ringosham.translationmod.client.LangManager;
 import com.ringosham.translationmod.common.ConfigManager;
 import com.ringosham.translationmod.translate.types.TranslateResult;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.TextComponent;
 
 public class SelfTranslate extends Thread {
     private final String message;
@@ -41,6 +42,6 @@ public class SelfTranslate extends Thread {
         if (translatedMessage == null)
             return;
         //noinspection ConstantConditions
-        Minecraft.getInstance().player.sendChatMessage(selfHeader + " " + translatedMessage.getMessage());
+        Minecraft.getInstance().player.sendMessage(new TextComponent(selfHeader + " " + translatedMessage.getMessage()), Minecraft.getInstance().player.getUUID());
     }
 }

@@ -1,13 +1,13 @@
 package com.ringosham.translationmod.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.ringosham.translationmod.TranslationMod;
 import com.ringosham.translationmod.client.LangManager;
 import com.ringosham.translationmod.client.types.Language;
 import com.ringosham.translationmod.common.ConfigManager;
 import com.ringosham.translationmod.translate.Retranslate;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.fml.ModList;
 
 public class LanguageSelectGui extends CommonGui {
@@ -46,9 +46,9 @@ public class LanguageSelectGui extends CommonGui {
     }
 
     @Override
-    public void render(MatrixStack stack, int x, int y, float tick) {
+    public void render(PoseStack stack, int x, int y, float tick) {
         super.render(stack, x, y, tick);
-        font.drawString(stack, title, getLeftMargin(), getTopMargin(), 0x555555);
+        font.draw(stack, title, getLeftMargin(), getTopMargin(), 0x555555);
         langList.render(stack, x, y, tick);
     }
 
@@ -56,8 +56,8 @@ public class LanguageSelectGui extends CommonGui {
     public void init() {
         langList = new LangList(getMinecraft(), font, guiWidth - 18, guiHeight - 48, getYOrigin() + 15, getYOrigin() + guiHeight - 10 - regularButtonHeight, 18);
         langList.setLeftPos(getLeftMargin());
-        this.children.add(langList);
-        addButton(new Button(getRightMargin(regularButtonWidth), getYOrigin() + guiHeight - regularButtonHeight - 5, regularButtonWidth, regularButtonHeight, new StringTextComponent("Select language"),
+        addRenderableWidget(langList);
+        addRenderableWidget(new Button(getRightMargin(regularButtonWidth), getYOrigin() + guiHeight - regularButtonHeight - 5, regularButtonWidth, regularButtonHeight, new TextComponent("Select language"),
                 (button) -> {
                     if (langList.getSelected() != null) {
                         if (config != null)
@@ -66,23 +66,31 @@ public class LanguageSelectGui extends CommonGui {
                             this.retranslate(langList.getSelected().getLang());
                     }
                 }));
-        addButton(new Button(getLeftMargin(), getYOrigin() + guiHeight - regularButtonHeight - 5, regularButtonWidth, regularButtonHeight, new StringTextComponent("Back"),
+        addRenderableWidget(new Button(getLeftMargin(), getYOrigin() + guiHeight - regularButtonHeight - 5, regularButtonWidth, regularButtonHeight, new TextComponent("Back"),
                 (button) -> {
                     if (config != null)
                         this.selectLanguage(null);
                     else
-                        getMinecraft().displayGuiScreen(new RetranslateGui());
+                        getMinecraft().setScreen(new RetranslateGui());
                 }));
     }
 
     @SuppressWarnings("ConstantConditions")
     private void selectLanguage(Language lang) {
-        getMinecraft().displayGuiScreen(new ConfigGui(config, langSelect, lang));
+        getMinecraft().setScreen(new ConfigGui(config, langSelect, lang));
     }
 
     private void retranslate(Language source) {
         Thread retranslate = new Retranslate(sender, message, source, LangManager.getInstance().findLanguageFromName(ConfigManager.config.targetLanguage.get()));
         retranslate.start();
-        getMinecraft().displayGuiScreen(null);
+        getMinecraft().setScreen(null);
+    }
+
+    @Override
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+        if (langList.isMouseOver(pMouseX, pMouseY)) {
+            return langList.mouseScrolled(pMouseX, pMouseY, pDelta);
+        }
+        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
     }
 }

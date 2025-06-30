@@ -21,7 +21,7 @@ import com.google.common.primitives.Ints;
 import com.ringosham.translationmod.TranslationMod;
 import com.ringosham.translationmod.client.LangManager;
 import com.ringosham.translationmod.client.types.Language;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
@@ -123,7 +123,7 @@ public class ConfigManager {
         }
 
         //Validates the color.
-        ArrayList<String> colors = new ArrayList<>(TextFormatting.getValidValues(true, false));
+        ArrayList<String> colors = new ArrayList<>(ChatFormatting.getNames(true, false));
         if (!colors.contains(config.color.get())) {
             config.color.set("gray");
             valid = false;
@@ -203,7 +203,7 @@ public class ConfigManager {
             italic = builder.comment("Italic the translated message").define("italic", false);
             underline = builder.comment("Underline the translated message").define("underline", false);
             color = builder.comment("Changes the color of the translated message").define("color", "gray", color -> {
-                List<String> colors = new ArrayList<>(TextFormatting.getValidValues(true, false));
+                List<String> colors = new ArrayList<>(ChatFormatting.getNames(true, false));
                 String c = (String) color;
                 return colors.contains(c);
             });

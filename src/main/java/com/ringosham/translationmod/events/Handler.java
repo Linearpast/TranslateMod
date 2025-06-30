@@ -1,5 +1,6 @@
 package com.ringosham.translationmod.events;
 
+import com.mojang.math.Vector3d;
 import com.ringosham.translationmod.client.LangManager;
 import com.ringosham.translationmod.common.ChatUtil;
 import com.ringosham.translationmod.common.ConfigManager;
@@ -8,23 +9,33 @@ import com.ringosham.translationmod.gui.TranslateGui;
 import com.ringosham.translationmod.translate.SignTranslate;
 import com.ringosham.translationmod.translate.Translator;
 import com.ringosham.translationmod.translate.types.SignText;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.tileentity.SignTileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
-import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.client.event.ScreenOpenEvent;
+import net.minecraftforge.client.settings.KeyBindingMap;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.config.ModConfig.Reloading;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.util.Objects;
 
@@ -49,15 +60,15 @@ public class Handler {
     };
 
     @SubscribeEvent
-    public void onGuiOpen(GuiOpenEvent event) {
-        if (event.getGui() == null) {
-            Minecraft.getInstance().keyboardListener.enableRepeatEvents(false);
+    public void onGuiOpen(ScreenOpenEvent event) {
+        if (event.getScreen() == null) {
+            Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(false);
         }
     }
 
     @SubscribeEvent
     public void chatReceived(ClientChatReceivedEvent event) {
-        ITextComponent eventMessage = event.getMessage();
+        Component eventMessage = event.getMessage();
         String message = eventMessage.getString().replaceAll("§(.)", "");
         Thread translate = new Translator(message, null, LangManager.getInstance().findLanguageFromName(ConfigManager.config.targetLanguage.get()));
         translate.start();
@@ -69,87 +80,61 @@ public class Handler {
             return;
         if (!hintShown) {
             hintShown = true;
-            ChatUtil.printChatMessage(true, "Press [" + TextFormatting.AQUA + KeyBinding.getDisplayString(KeyBind.translateKey.getKeyDescription()).get().getUnformattedComponentText() + TextFormatting.WHITE + "] for translation settings", TextFormatting.WHITE);
-            if (ConfigManager.config.regexList.get().size() == 0) {
+            ChatUtil.printChatMessage(true, "Press [" + ChatFormatting.AQUA + KeyMapping.createNameSupplier(KeyBind.translateKey.getName()).get().getString() + ChatFormatting.WHITE + "] for translation settings", ChatFormatting.WHITE);
+            if (ConfigManager.config.regexList.get().isEmpty()) {
                 Log.logger.warn("No chat regex in the configurations");
-                ChatUtil.printChatMessage(true, "The mod needs chat regex to function. Check the mod options to add one", TextFormatting.RED);
+                ChatUtil.printChatMessage(true, "The mod needs chat regex to function. Check the mod options to add one", ChatFormatting.RED);
             }
-        }
-    }
-
-    @SubscribeEvent
-    public void onWorldTick(TickEvent.WorldTickEvent event) {
-        if (event.world == null)
-            return;
-        //Scan for signs
-        if (ConfigManager.config.translateSign.get() && event.phase == TickEvent.Phase.END) {
-            processSign(event.world);
         }
     }
 
     //If config is somehow changed through other means
     @SubscribeEvent
-    public void onConfigChanged(Reloading event) {
+    public void onConfigChanged(ModConfigEvent.Reloading event) {
         ConfigManager.saveConfig();
     }
 
     @SubscribeEvent
     public void onKeybind(InputEvent.KeyInputEvent event) {
-        if (KeyBind.translateKey.isPressed())
-            Minecraft.getInstance().displayGuiScreen(new TranslateGui());
+        if (KeyBind.translateKey.consumeClick())
+            Minecraft.getInstance().setScreen(new TranslateGui());
     }
 
-    private void processSign(World world) {
-        RayTraceResult mouseOver = Minecraft.getInstance().objectMouseOver;
-        if (mouseOver == null)
-            return;
-        else if (mouseOver.getType() != RayTraceResult.Type.BLOCK) {
-            lastSign = null;
-            ticks = 0;
-            return;
-        }
-        Vector3d vec = mouseOver.getHitVec();
-        BlockPos blockPos = new BlockPos(vec);
-        //Ignore air tiles
-        if (world.getBlockState(blockPos).getBlock() == Blocks.AIR)
-            return;
-        //Wall signs and standing signs
-        boolean isSign = false;
-        for (Block signBlock : signBlocks) {
-            if (world.getBlockState(blockPos).getBlock() == signBlock) {
-                //Ensure the player is staring at the same sign
-                if (lastSign != null && lastSign.getText() != null) {
-                    if (lastSign.sameSign(blockPos)) {
-                        ticks++;
-                        //Count number of ticks the player is staring
-                        //Assuming 20 TPS
-                        if (ticks >= 20)
-                            if (readSign != null && readSign.getState() == Thread.State.NEW)
-                                readSign.start();
-                    } else
-                        readSign = getSignThread(world, blockPos);
-                } else
-                    readSign = getSignThread(world, blockPos);
-                isSign = true;
+
+    @SubscribeEvent
+    public void processSign(PlayerInteractEvent.RightClickBlock event) {
+        if(ConfigManager.config.translateSign.get()
+                && event.getHand() == InteractionHand.MAIN_HAND
+                && event.getSide().isClient())
+        {
+            BlockHitResult hitVec = event.getHitVec();
+            if(hitVec != null){
+                Level level = event.getPlayer().level;
+                BlockPos blockPos = hitVec.getBlockPos();
+                BlockState blockState = level.getBlockState(blockPos);
+                for (Block signBlock : signBlocks) {
+                    if(blockState.is(signBlock)){
+                        SignTranslate signThread = getSignThread(level, blockPos);
+                        if(signThread != null){
+                            signThread.start();
+                        }
+                    }
+                }
             }
         }
-        if (!isSign) {
-            lastSign = null;
-            ticks = 0;
-        }
     }
 
-    private SignTranslate getSignThread(World world, BlockPos pos) {
+    private SignTranslate getSignThread(Level world, BlockPos pos) {
         StringBuilder text = new StringBuilder();
         //Four lines of text in signs
         for (int i = 0; i < 4; i++) {
-            ITextComponent line = ((SignTileEntity) Objects.requireNonNull(world.getTileEntity(pos))).getText(i);
+            Component line = ((SignBlockEntity) Objects.requireNonNull(world.getBlockEntity(pos))).getMessage(i,false);
             //Combine each line of the sign with spaces.
             //Due to differences between languages, this may break asian languages. (Words don't separate with spaces)
-            text.append(" ").append(line.getUnformattedComponentText().replaceAll("§(.)", ""));
+            text.append(" ").append(line.getString().replaceAll("§(.)", ""));
         }
         text = new StringBuilder(text.toString().replaceAll("§(.)", ""));
-        if (text.length() == 0)
+        if (text.isEmpty())
             return null;
         lastSign = new SignText();
         lastSign.setSign(text.toString(), pos);

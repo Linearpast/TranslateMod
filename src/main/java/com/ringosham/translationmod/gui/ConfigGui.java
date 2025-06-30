@@ -17,17 +17,17 @@
 
 package com.ringosham.translationmod.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.ringosham.translationmod.TranslationMod;
 import com.ringosham.translationmod.client.LangManager;
 import com.ringosham.translationmod.client.types.Language;
 import com.ringosham.translationmod.common.ChatUtil;
 import com.ringosham.translationmod.common.ConfigManager;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.fml.ModList;
 
 import java.util.ArrayList;
@@ -36,33 +36,33 @@ import java.util.List;
 public class ConfigGui extends CommonGui {
     private static final int guiWidth = 250;
     private static final int guiHeight = 206;
-    private static final StringTextComponent targetTooltip = new StringTextComponent("The language your chat will be translated to");
-    private static final List<ITextComponent> selfTooltip = new ArrayList<>();
-    private static final List<ITextComponent> speakAsTooltip = new ArrayList<>();
-    private static final List<ITextComponent> regexTooltip = new ArrayList<>();
-    private static final List<ITextComponent> apiKeyTooltip = new ArrayList<>();
-    private static final List<ITextComponent> colorTooltip = new ArrayList<>();
-    private static final List<ITextComponent> boldTooltip = new ArrayList<>();
-    private static final List<ITextComponent> underlineTooltip = new ArrayList<>();
-    private static final List<ITextComponent> italicTooltip = new ArrayList<>();
-    private static final List<ITextComponent> signTooltip = new ArrayList<>();
+    private static final TextComponent targetTooltip = new TextComponent("The language your chat will be translated to");
+    private static final List<Component> selfTooltip = new ArrayList<>();
+    private static final List<Component> speakAsTooltip = new ArrayList<>();
+    private static final List<Component> regexTooltip = new ArrayList<>();
+    private static final List<Component> apiKeyTooltip = new ArrayList<>();
+    private static final List<Component> colorTooltip = new ArrayList<>();
+    private static final List<Component> boldTooltip = new ArrayList<>();
+    private static final List<Component> underlineTooltip = new ArrayList<>();
+    private static final List<Component> italicTooltip = new ArrayList<>();
+    private static final List<Component> signTooltip = new ArrayList<>();
     private static final String title;
 
     static {
-        selfTooltip.add(new StringTextComponent("The language you speak in game"));
-        selfTooltip.add(new StringTextComponent("This will be utilised when you want to translate what you speak"));
-        speakAsTooltip.add(new StringTextComponent("The language your messages will be translated to."));
-        speakAsTooltip.add(new StringTextComponent("After you typed your messages through this mod,"));
-        speakAsTooltip.add(new StringTextComponent("it will be translated to the language you specified"));
-        regexTooltip.add(new StringTextComponent("Regex are patterns for the mod to detect chat messages."));
-        regexTooltip.add(new StringTextComponent("If you notice the mod doesn't do anything on a server,"));
-        regexTooltip.add(new StringTextComponent("chances are you need to add one here."));
-        signTooltip.add(new StringTextComponent("Translates signs when you look at them"));
-        apiKeyTooltip.add(new StringTextComponent("Change your translation engine options and enter your API key"));
-        colorTooltip.add(new StringTextComponent("Changes the color of the translated message"));
-        boldTooltip.add(new StringTextComponent("Bolds the translated message"));
-        italicTooltip.add(new StringTextComponent("Italics the translated message"));
-        underlineTooltip.add(new StringTextComponent("Underlines the translated message"));
+        selfTooltip.add(new TextComponent("The language you speak in game"));
+        selfTooltip.add(new TextComponent("This will be utilised when you want to translate what you speak"));
+        speakAsTooltip.add(new TextComponent("The language your messages will be translated to."));
+        speakAsTooltip.add(new TextComponent("After you typed your messages through this mod,"));
+        speakAsTooltip.add(new TextComponent("it will be translated to the language you specified"));
+        regexTooltip.add(new TextComponent("Regex are patterns for the mod to detect chat messages."));
+        regexTooltip.add(new TextComponent("If you notice the mod doesn't do anything on a server,"));
+        regexTooltip.add(new TextComponent("chances are you need to add one here."));
+        signTooltip.add(new TextComponent("Translates signs when you look at them"));
+        apiKeyTooltip.add(new TextComponent("Change your translation engine options and enter your API key"));
+        colorTooltip.add(new TextComponent("Changes the color of the translated message"));
+        boldTooltip.add(new TextComponent("Bolds the translated message"));
+        italicTooltip.add(new TextComponent("Italics the translated message"));
+        underlineTooltip.add(new TextComponent("Underlines the translated message"));
         @SuppressWarnings("OptionalGetWithoutIsPresent")
         String modName = ModList.get().getModContainerById(TranslationMod.MODID).get().getModInfo().getDisplayName();
         title = modName + " - Settings";
@@ -111,51 +111,69 @@ public class ConfigGui extends CommonGui {
     }
 
     @Override
-    public void render(MatrixStack stack, int x, int y, float tick) {
+    public void render(PoseStack stack, int x, int y, float tick) {
         super.render(stack, x, y, tick);
         drawStringLine(stack, title, null, 0);
-        font.drawString(stack, "Regex list:", getLeftMargin(), getYOrigin() + 25, 0x555555);
-        font.drawString(stack, "Target language:", getLeftMargin(), getYOrigin() + 55, 0x555555);
-        font.drawString(stack, "Self language:", getLeftMargin(), getYOrigin() + 75, 0x555555);
-        font.drawString(stack, "Speak as language:", getLeftMargin(), getYOrigin() + 95, 0x555555);
-        font.drawString(stack, "Preview: ", getLeftMargin(), getYOrigin() + 115, 0x555555);
+        font.draw(stack, "Regex list:", getLeftMargin(), getYOrigin() + 25, 0x555555);
+        font.draw(stack, "Target language:", getLeftMargin(), getYOrigin() + 55, 0x555555);
+        font.draw(stack, "Self language:", getLeftMargin(), getYOrigin() + 75, 0x555555);
+        font.draw(stack, "Speak as language:", getLeftMargin(), getYOrigin() + 95, 0x555555);
+        font.draw(stack, "Preview: ", getLeftMargin(), getYOrigin() + 115, 0x555555);
 
-        Style previewStyle = Style.EMPTY.setFormatting(TextFormatting.getValueByName(color))
-                .mergeStyle(Style.EMPTY.setBold(bold))
-                .mergeStyle(Style.EMPTY.setItalic(italic))
-                .mergeStyle(Style.EMPTY.setUnderlined(underline));
-        font.drawText(stack, new StringTextComponent("Notch --> English: Hello!").setStyle(previewStyle), getLeftMargin() + 45, getYOrigin() + 115, 0);
+        Style previewStyle = Style.EMPTY.applyFormats(ChatFormatting.getByName(color))
+                .withBold(bold).withItalic(italic).withUnderlined(underline);
+        font.draw(stack, new TextComponent("Notch --> English: Hello!").setStyle(previewStyle), getLeftMargin() + 45, getYOrigin() + 115, 0);
         //func_243308_b(MatrixStack, List<ITextComponent>, int, int) -> renderTooltip(...)
+        Button button2,button3,button4, button5, button6, button7, button8, button9, button10, button11;
+        button10 = button11 = button9 = button8 = button7 = button6 = button5 = button4 = button3 = button2 = null;
+        for (int i = 0, j = 0; i < renderables.size(); i++) {
+            if(renderables.get(i) instanceof Button){
+                if(j == 2) button2 = (Button)renderables.get(i);
+                if(j == 3) button3 = (Button)renderables.get(i);
+                if(j == 4) button4 = (Button)renderables.get(i);
+                if(j == 5) button5 = (Button)renderables.get(i);
+                if(j == 6) button6 = (Button)renderables.get(i);
+                if(j == 7) button7 = (Button)renderables.get(i);
+                if(j == 8) button8 = (Button)renderables.get(i);
+                if(j == 9) button9 = (Button)renderables.get(i);
+                if(j == 10) button10 = (Button)renderables.get(i);
+                if(j == 11) {
+                    button11 = (Button)renderables.get(i);
+                    break;
+                }
+                j++;
+            }
+        }
         //Target language
-        if (this.buttons.get(2).isHovered())
+        if (button2 != null && button2.isHoveredOrFocused())
             renderTooltip(stack, targetTooltip, x, y);
         //Self language
-        if (this.buttons.get(3).isHovered())
-            func_243308_b(stack, selfTooltip, x, y);
+        if (button3 != null && button3.isHoveredOrFocused())
+            renderComponentTooltip(stack, selfTooltip, x, y);
         //Speak as language
-        if (this.buttons.get(4).isHovered())
-            func_243308_b(stack, speakAsTooltip, x, y);
+        if (button4 != null && button4.isHoveredOrFocused())
+            renderComponentTooltip(stack, speakAsTooltip, x, y);
         //Regex list
-        if (this.buttons.get(11).isHovered())
-            func_243308_b(stack, regexTooltip, x, y);
+        if (button11 != null && button11.isHoveredOrFocused())
+            renderComponentTooltip(stack, regexTooltip, x, y);
         //API key
-        if (this.buttons.get(6).isHovered())
-            func_243308_b(stack, apiKeyTooltip, x, y);
+        if (button6 != null && button6.isHoveredOrFocused())
+            renderComponentTooltip(stack, apiKeyTooltip, x, y);
         //Translate sign
-        if (this.buttons.get(5).isHovered())
-            func_243308_b(stack, signTooltip, x, y);
+        if (button5 != null && button5.isHoveredOrFocused())
+            renderComponentTooltip(stack, signTooltip, x, y);
         //Color message
-        if (this.buttons.get(7).isHovered())
-            func_243308_b(stack, colorTooltip, x, y);
+        if (button7 != null && button7.isHoveredOrFocused())
+            renderComponentTooltip(stack, colorTooltip, x, y);
         //Bold
-        if (this.buttons.get(8).isHovered())
-            func_243308_b(stack, boldTooltip, x, y);
+        if (button8 != null && button8.isHoveredOrFocused())
+            renderComponentTooltip(stack, boldTooltip, x, y);
         //Italic
-        if (this.buttons.get(9).isHovered())
-            func_243308_b(stack, italicTooltip, x, y);
+        if (button9 != null && button9.isHoveredOrFocused())
+            renderComponentTooltip(stack, italicTooltip, x, y);
         //Underline
-        if (this.buttons.get(10).isHovered())
-            func_243308_b(stack, underlineTooltip, x, y);
+        if (button10 != null && button10.isHoveredOrFocused())
+            renderComponentTooltip(stack, underlineTooltip, x, y);
     }
 
     @Override
@@ -170,46 +188,46 @@ public class ConfigGui extends CommonGui {
             selfLang = LangManager.getInstance().findLanguageFromName(ConfigManager.config.selfLanguage.get());
             speakAsLang = LangManager.getInstance().findLanguageFromName(ConfigManager.config.speakAsLanguage.get());
         }
-        addButton(new Button(getLeftMargin(), getYOrigin() + guiHeight - 5 - regularButtonHeight, regularButtonWidth, regularButtonHeight, new StringTextComponent("Save and close"),
+        addRenderableWidget(new Button(getLeftMargin(), getYOrigin() + guiHeight - 5 - regularButtonHeight, regularButtonWidth, regularButtonHeight, new TextComponent("Save and close"),
                 (button) -> this.applySettings()));
-        addButton(new Button(getRightMargin(regularButtonWidth), getYOrigin() + guiHeight - 5 - regularButtonHeight, regularButtonWidth, regularButtonHeight, new StringTextComponent("Reset to default"),
+        addRenderableWidget(new Button(getRightMargin(regularButtonWidth), getYOrigin() + guiHeight - 5 - regularButtonHeight, regularButtonWidth, regularButtonHeight, new TextComponent("Reset to default"),
                 (button) -> this.resetDefault()));
-        addButton(new Button(getRightMargin(regularButtonWidth), getYOrigin() + 50, regularButtonWidth, regularButtonHeight, new StringTextComponent(targetLang.getName()),
+        addRenderableWidget(new Button(getRightMargin(regularButtonWidth), getYOrigin() + 50, regularButtonWidth, regularButtonHeight, new TextComponent(targetLang.getName()),
                 (button) -> this.langSelect(0)));
-        addButton(new Button(getRightMargin(regularButtonWidth), getYOrigin() + 70, regularButtonWidth, regularButtonHeight, new StringTextComponent(selfLang.getName()),
+        addRenderableWidget(new Button(getRightMargin(regularButtonWidth), getYOrigin() + 70, regularButtonWidth, regularButtonHeight, new TextComponent(selfLang.getName()),
                 (button) -> this.langSelect(1)));
-        addButton(new Button(getRightMargin(regularButtonWidth), getYOrigin() + 90, regularButtonWidth, regularButtonHeight, new StringTextComponent(speakAsLang.getName()),
+        addRenderableWidget(new Button(getRightMargin(regularButtonWidth), getYOrigin() + 90, regularButtonWidth, regularButtonHeight, new TextComponent(speakAsLang.getName()),
                 (button) -> this.langSelect(2)));
-        addButton(new Button(getLeftMargin(), getYOrigin() + guiHeight - 15 - regularButtonHeight * 3, regularButtonWidth, regularButtonHeight, new StringTextComponent(translateSign ? TextFormatting.GREEN + "Translate signs" : TextFormatting.RED + "Translate signs"),
+        addRenderableWidget(new Button(getLeftMargin(), getYOrigin() + guiHeight - 15 - regularButtonHeight * 3, regularButtonWidth, regularButtonHeight, new TextComponent(translateSign ? ChatFormatting.GREEN + "Translate signs" : ChatFormatting.RED + "Translate signs"),
                 (button) -> {
                     translateSign = !translateSign;
                     this.toggleButtonBool(translateSign, button);
                 }));
-        addButton(new Button(getLeftMargin(), getYOrigin() + guiHeight - 10 - regularButtonHeight * 2, regularButtonWidth, regularButtonHeight, new StringTextComponent("Engine options"),
+        addRenderableWidget(new Button(getLeftMargin(), getYOrigin() + guiHeight - 10 - regularButtonHeight * 2, regularButtonWidth, regularButtonHeight, new TextComponent("Engine options"),
                 (button) -> this.addKeyGui()));
-        addButton(new Button(getRightMargin(regularButtonWidth), getYOrigin() + guiHeight - 10 - regularButtonHeight * 2, regularButtonWidth, regularButtonHeight, new StringTextComponent(TextFormatting.getValueByName(color) + "Message color"),
+        addRenderableWidget(new Button(getRightMargin(regularButtonWidth), getYOrigin() + guiHeight - 10 - regularButtonHeight * 2, regularButtonWidth, regularButtonHeight, new TextComponent(ChatFormatting.getByName(color) + "Message color"),
                 this::rotateColor));
-        addButton(new Button(getLeftMargin() + regularButtonWidth + 10, getYOrigin() + guiHeight - 15 - regularButtonHeight * 3, smallButtonLength, smallButtonLength, new StringTextComponent(bold ? "\u00a7a" + TextFormatting.BOLD + "B" : "\u00a7c" + TextFormatting.BOLD + "B"),
+        addRenderableWidget(new Button(getLeftMargin() + regularButtonWidth + 10, getYOrigin() + guiHeight - 15 - regularButtonHeight * 3, smallButtonLength, smallButtonLength, new TextComponent(bold ? "\u00a7a" + ChatFormatting.BOLD + "B" : "\u00a7c" + ChatFormatting.BOLD + "B"),
                 (button) -> {
                     bold = !bold;
-                    this.toggleButtonBool(bold, button, TextFormatting.BOLD);
+                    this.toggleButtonBool(bold, button, ChatFormatting.BOLD);
                 }));
-        addButton(new Button(getLeftMargin() + regularButtonWidth + 10, getYOrigin() + guiHeight - 10 - regularButtonHeight * 2, smallButtonLength, smallButtonLength, new StringTextComponent(italic ? "\u00a7a" + TextFormatting.ITALIC + "I" : "\u00a7c" + TextFormatting.ITALIC + "I"),
+        addRenderableWidget(new Button(getLeftMargin() + regularButtonWidth + 10, getYOrigin() + guiHeight - 10 - regularButtonHeight * 2, smallButtonLength, smallButtonLength, new TextComponent(italic ? "\u00a7a" + ChatFormatting.ITALIC + "I" : "\u00a7c" + ChatFormatting.ITALIC + "I"),
                 (button) -> {
                     italic = !italic;
-                    this.toggleButtonBool(italic, button, TextFormatting.ITALIC);
+                    this.toggleButtonBool(italic, button, ChatFormatting.ITALIC);
                 }));
-        addButton(new Button(getLeftMargin() + regularButtonWidth + 10, getYOrigin() + guiHeight - 5 - regularButtonHeight, smallButtonLength, smallButtonLength, new StringTextComponent(underline ? "\u00a7a" + TextFormatting.UNDERLINE + "U" : "\u00a7c" + TextFormatting.UNDERLINE + "U"),
+        addRenderableWidget(new Button(getLeftMargin() + regularButtonWidth + 10, getYOrigin() + guiHeight - 5 - regularButtonHeight, smallButtonLength, smallButtonLength, new TextComponent(underline ? "\u00a7a" + ChatFormatting.UNDERLINE + "U" : "\u00a7c" + ChatFormatting.UNDERLINE + "U"),
                 (button) -> {
                     underline = !underline;
-                    this.toggleButtonBool(underline, button, TextFormatting.UNDERLINE);
+                    this.toggleButtonBool(underline, button, ChatFormatting.UNDERLINE);
                 }));
-        addButton(new Button(getRightMargin(regularButtonWidth), getYOrigin() + 20, regularButtonWidth, regularButtonHeight, new StringTextComponent("View / Add"),
+        addRenderableWidget(new Button(getRightMargin(regularButtonWidth), getYOrigin() + 20, regularButtonWidth, regularButtonHeight, new TextComponent("View / Add"),
                 (button) -> this.regexGui()));
     }
 
     private void applySettings() {
-        getMinecraft().keyboardListener.enableRepeatEvents(false);
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
         ConfigManager.config.targetLanguage.set(targetLang.getName());
         ConfigManager.config.selfLanguage.set(selfLang.getName());
         ConfigManager.config.speakAsLanguage.set(speakAsLang.getName());
@@ -219,27 +237,27 @@ public class ConfigGui extends CommonGui {
         ConfigManager.config.underline.set(underline);
         ConfigManager.config.translateSign.set(translateSign);
         ConfigManager.saveConfig();
-        ChatUtil.printChatMessage(true, "Settings applied.", TextFormatting.WHITE);
+        ChatUtil.printChatMessage(true, "Settings applied.", ChatFormatting.WHITE);
         exitGui();
     }
 
     private void exitGui() {
-        getMinecraft().keyboardListener.enableRepeatEvents(false);
-        getMinecraft().displayGuiScreen(null);
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
+        getMinecraft().setScreen(null);
     }
 
     private void langSelect(int id) {
-        getMinecraft().displayGuiScreen(new LanguageSelectGui(this, id));
+        getMinecraft().pushGuiLayer(new LanguageSelectGui(this, id));
     }
 
-    private void toggleButtonBool(boolean state, Button button, TextFormatting prefixFormat) {
-        String rawString = button.getMessage().getUnformattedComponentText().replaceAll("\u00a7(.)", "");
-        StringTextComponent buttonText;
-        TextFormatting color = state ? TextFormatting.GREEN : TextFormatting.RED;
+    private void toggleButtonBool(boolean state, Button button, ChatFormatting prefixFormat) {
+        String rawString = button.getMessage().getString().replaceAll("\u00a7(.)", "");
+        TextComponent buttonText;
+        ChatFormatting color = state ? ChatFormatting.GREEN : ChatFormatting.RED;
         if (prefixFormat == null) {
-            buttonText = new StringTextComponent(color + rawString);
+            buttonText = new TextComponent(color + rawString);
         } else {
-            buttonText = new StringTextComponent(prefixFormat + "" + color + rawString);
+            buttonText = new TextComponent(prefixFormat + "" + color + rawString);
         }
         button.setMessage(buttonText);
     }
@@ -250,24 +268,24 @@ public class ConfigGui extends CommonGui {
 
     @SuppressWarnings("ConstantConditions")
     private void rotateColor(Button button) {
-        TextFormatting formatColor = TextFormatting.getValueByName(color);
-        int colorCode = formatColor.getColorIndex();
+        ChatFormatting formatColor = ChatFormatting.getByName(color);
+        int colorCode = formatColor.getColor();
         colorCode++;
         colorCode = colorCode & 0xf;
-        TextFormatting newColor = TextFormatting.fromColorIndex(colorCode);
-        color = newColor.getFriendlyName();
-        StringTextComponent buttonText = new StringTextComponent(newColor + button.getMessage().getUnformattedComponentText().replaceAll("\u00a7(.)", ""));
+        ChatFormatting newColor = ChatFormatting.getById(colorCode);
+        color = newColor.getName();
+        TextComponent buttonText = new TextComponent(newColor + button.getMessage().getString().replaceAll("\u00a7(.)", ""));
         button.setMessage(buttonText);
     }
 
     private void regexGui() {
-        getMinecraft().keyboardListener.enableRepeatEvents(true);
-        getMinecraft().displayGuiScreen(new RegexGui());
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
+        getMinecraft().setScreen(new RegexGui());
     }
 
     private void addKeyGui() {
-        getMinecraft().keyboardListener.enableRepeatEvents(true);
-        getMinecraft().displayGuiScreen(new EngineGui());
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
+        getMinecraft().setScreen(new EngineGui());
     }
 
     private void resetDefault() {
@@ -279,13 +297,47 @@ public class ConfigGui extends CommonGui {
         targetLang = LangManager.getInstance().findLanguageFromName("English");
         selfLang = targetLang;
         speakAsLang = LangManager.getInstance().findLanguageFromName("Japanese");
-        this.buttons.get(2).setMessage(new StringTextComponent("English"));
-        this.buttons.get(3).setMessage(new StringTextComponent("English"));
-        this.buttons.get(4).setMessage(new StringTextComponent("Japanese"));
-        this.buttons.get(5).setMessage(new StringTextComponent(TextFormatting.GREEN + "Translate signs"));
-        this.buttons.get(7).setMessage(new StringTextComponent(TextFormatting.getValueByName(color) + "Message color"));
-        this.buttons.get(8).setMessage(new StringTextComponent(bold ? "\u00a7a" : "\u00a7c" + TextFormatting.BOLD + "B"));
-        this.buttons.get(9).setMessage(new StringTextComponent(italic ? "\u00a7a" : "\u00a7c" + TextFormatting.ITALIC + "I"));
-        this.buttons.get(10).setMessage(new StringTextComponent(underline ? "\u00a7a" : "\u00a7c" + TextFormatting.UNDERLINE + "U"));
+        Button button2,button3,button4, button5, button7, button8, button9, button10;
+        button10 = button9 = button8 = button7 = button5 = button4 = button3 = button2 = null;
+        for (int i = 0, j = 0; i < renderables.size(); i++) {
+            if(renderables.get(i) instanceof Button){
+                if(j == 2) button2 = (Button)renderables.get(i);
+                if(j == 3) button3 = (Button)renderables.get(i);
+                if(j == 4) button4 = (Button)renderables.get(i);
+                if(j == 5) button5 = (Button)renderables.get(i);
+                if(j == 7) button7 = (Button)renderables.get(i);
+                if(j == 8) button8 = (Button)renderables.get(i);
+                if(j == 9) button9 = (Button)renderables.get(i);
+                if(j == 10) {
+                    button10 = (Button)renderables.get(i);
+                    break;
+                }
+                j++;
+            }
+        }
+        if(button2 != null) {
+            button2.setMessage(new TextComponent("English"));
+        }
+        if(button3 != null) {
+            button3.setMessage(new TextComponent("English"));
+        }
+        if(button4 != null) {
+            button4.setMessage(new TextComponent("Japanese"));
+        }
+        if(button5 != null) {
+            button5.setMessage(new TextComponent(ChatFormatting.GREEN + "Translate signs"));
+        }
+        if(button7 != null) {
+            button7.setMessage(new TextComponent(ChatFormatting.getByName(color) + "Message color"));
+        }
+        if(button8 != null) {
+            button8.setMessage(new TextComponent(bold ? "\u00a7a" : "\u00a7c" + ChatFormatting.BOLD + "B"));
+        }
+        if(button9 != null) {
+            button9.setMessage(new TextComponent(italic ? "\u00a7a" : "\u00a7c" + ChatFormatting.ITALIC + "I"));
+        }
+        if(button10 != null) {
+            button10.setMessage(new TextComponent(underline ? "\u00a7a" : "\u00a7c" + ChatFormatting.UNDERLINE + "U"));
+        }
     }
 }

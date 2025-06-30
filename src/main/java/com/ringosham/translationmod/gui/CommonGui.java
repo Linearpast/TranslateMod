@@ -1,9 +1,11 @@
 package com.ringosham.translationmod.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class CommonGui extends Screen {
@@ -15,7 +17,7 @@ public class CommonGui extends Screen {
     private final int guiWidth;
 
     CommonGui(String title, int guiHeight, int guiWidth) {
-        super(new StringTextComponent(title));
+        super(new TextComponent(title));
         if (guiWidth < 10 || guiHeight < 10)
             throw new IllegalArgumentException("GUI width too short!");
         this.guiHeight = guiHeight;
@@ -24,11 +26,11 @@ public class CommonGui extends Screen {
 
     @SuppressWarnings("NullableProblems")
     @Override
-    public void render(MatrixStack stack, int x, int y, float tick) {
+    public void render(PoseStack stack, int x, int y, float tick) {
         //Draws the base background
-        GL11.glColor4f(1, 1, 1, 1);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
         renderBackground(stack);
-        getMinecraft().getTextureManager().bindTexture(texture);
+        getMinecraft().getTextureManager().bindForSetup(texture);
         //Top left corner
         blit(stack, getXOrigin(), getYOrigin(), 0, 0, 4, 4);
         //Bottom left corner
@@ -83,19 +85,19 @@ public class CommonGui extends Screen {
     }
 
     public int getTextWidth(String text) {
-        return font.getStringWidth(text);
+        return font.width(text);
     }
 
     /**
      * Draws strings from the top-left of the gui
      */
-    public void drawStringLine(MatrixStack stack, String title, String[] lines, int offset) {
-        font.drawString(stack, title, getLeftMargin(), getTopMargin(), 0x555555);
+    public void drawStringLine(PoseStack stack, String title, String[] lines, int offset) {
+        font.draw(stack, title, getLeftMargin(), getTopMargin(), 0x555555);
         int lineCount = 1;
         if (lines == null)
             return;
         for (String text : lines) {
-            font.drawString(stack, text, getLeftMargin(), getTopMargin() + offset + 10 * lineCount, 0x555555);
+            font.draw(stack, text, getLeftMargin(), getTopMargin() + offset + 10 * lineCount, 0x555555);
             lineCount++;
         }
     }

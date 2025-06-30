@@ -112,3 +112,4 @@
        - FIX: Translator crash due to previously failed translation (#11)
        - FIX: Failed to get chat log from regex screen (#10)
        - FIX: Google translate API call error (#14)
+ 7.0   - VERSION: change to version 1.18.2

@@ -24,8 +24,8 @@ import com.ringosham.translationmod.common.ConfigManager;
 import com.ringosham.translationmod.common.Log;
 import com.ringosham.translationmod.translate.types.SignText;
 import com.ringosham.translationmod.translate.types.TranslateResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 
 public class SignTranslate extends Thread {
     private final String text;
@@ -54,6 +54,6 @@ public class SignTranslate extends Thread {
                 "\n" +
                 "Translation: " +
                 translatedMessage.getSourceLanguage().getName() + " -> " + targetLanguage.getName();
-        ChatUtil.printChatMessageAdvanced(chatMessage, hoverText, ConfigManager.config.bold.get(), ConfigManager.config.italic.get(), ConfigManager.config.underline.get(), TextFormatting.getValueByName(ConfigManager.config.color.get()));
+        ChatUtil.printChatMessageAdvanced(chatMessage, hoverText, ConfigManager.config.bold.get(), ConfigManager.config.italic.get(), ConfigManager.config.underline.get(), ChatFormatting.getByName(ConfigManager.config.color.get()));
     }
 }

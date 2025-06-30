@@ -4,7 +4,7 @@ import com.ringosham.translationmod.client.types.Language;
 import com.ringosham.translationmod.common.ChatUtil;
 import com.ringosham.translationmod.common.ConfigManager;
 import com.ringosham.translationmod.translate.types.TranslateResult;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
 
 public class Retranslate extends Thread {
 
@@ -28,7 +28,7 @@ public class Retranslate extends Thread {
             return;
         TranslateResult translatedMessage = translator.translate(message.trim());
         if (translatedMessage == null) {
-            ChatUtil.printChatMessage(true, "An error occurred during translation", TextFormatting.RED);
+            ChatUtil.printChatMessage(true, "An error occurred during translation", ChatFormatting.RED);
             return;
         }
         String fromStr = null;
@@ -42,9 +42,9 @@ public class Retranslate extends Thread {
                 (fromStr == null ? "Unknown" : fromStr) + " -> " + to.getName();
         //If the translation result is the same as the original message, this means the translation failed.
         if (translatedMessage.getMessage().trim().equals(message.trim())) {
-            ChatUtil.printChatMessage(true, "Translation failed. Try another language maybe?", TextFormatting.RED);
+            ChatUtil.printChatMessage(true, "Translation failed. Try another language maybe?", ChatFormatting.RED);
             return;
         }
-        ChatUtil.printChatMessageAdvanced(chatMessage, hoverText, ConfigManager.config.bold.get(), ConfigManager.config.italic.get(), ConfigManager.config.underline.get(), TextFormatting.getValueByName(ConfigManager.config.color.get()));
+        ChatUtil.printChatMessageAdvanced(chatMessage, hoverText, ConfigManager.config.bold.get(), ConfigManager.config.italic.get(), ConfigManager.config.underline.get(), ChatFormatting.getByName(ConfigManager.config.color.get()));
     }
 }

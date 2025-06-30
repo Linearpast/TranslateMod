@@ -98,3 +98,4 @@ env/
 bin/
 src/test/
 logs/
+run

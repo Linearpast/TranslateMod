@@ -17,16 +17,16 @@
 
 package com.ringosham.translationmod.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.ringosham.translationmod.TranslationMod;
 import com.ringosham.translationmod.common.ChatUtil;
 import com.ringosham.translationmod.common.ConfigManager;
 import com.ringosham.translationmod.common.Log;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.fml.ModList;
 import org.lwjgl.glfw.GLFW;
 
@@ -38,30 +38,30 @@ public class EngineGui extends CommonGui {
     private static final int guiHeight = 150;
     private static final String title;
 
-    private static final List<ITextComponent> googleTooltip = new ArrayList<>();
-    private static final List<ITextComponent> baiduTooltip = new ArrayList<>();
+    private static final List<Component> googleTooltip = new ArrayList<>();
+    private static final List<Component> baiduTooltip = new ArrayList<>();
 
     static {
         @SuppressWarnings("OptionalGetWithoutIsPresent")
         String modName = ModList.get().getModContainerById(TranslationMod.MODID).get().getModInfo().getDisplayName();
         title = modName + " - Engine options";
-        googleTooltip.add(new StringTextComponent("By default, you are using the \"free\" version of Google translation"));
-        googleTooltip.add(new StringTextComponent("This is the same API the Google translate website is using"));
-        googleTooltip.add(new StringTextComponent("However, too many requests and Google will block you for a few minutes"));
-        googleTooltip.add(new StringTextComponent("Cloud translation API is the paid version of Google translate"));
-        googleTooltip.add(new StringTextComponent("Please check the mod page for details"));
-        baiduTooltip.add(new StringTextComponent("If you cannot use Google due to country restrictions,"));
-        baiduTooltip.add(new StringTextComponent("Baidu is your second option"));
-        baiduTooltip.add(new StringTextComponent("An account is needed to use this API (Phone verification required)"));
-        baiduTooltip.add(new StringTextComponent("Free tier only allows 1 request per second"));
-        baiduTooltip.add(new StringTextComponent("Paying allows for more requests per second"));
-        baiduTooltip.add(new StringTextComponent("Please check the mod page for details"));
+        googleTooltip.add(new TextComponent("By default, you are using the \"free\" version of Google translation"));
+        googleTooltip.add(new TextComponent("This is the same API the Google translate website is using"));
+        googleTooltip.add(new TextComponent("However, too many requests and Google will block you for a few minutes"));
+        googleTooltip.add(new TextComponent("Cloud translation API is the paid version of Google translate"));
+        googleTooltip.add(new TextComponent("Please check the mod page for details"));
+        baiduTooltip.add(new TextComponent("If you cannot use Google due to country restrictions,"));
+        baiduTooltip.add(new TextComponent("Baidu is your second option"));
+        baiduTooltip.add(new TextComponent("An account is needed to use this API (Phone verification required)"));
+        baiduTooltip.add(new TextComponent("Free tier only allows 1 request per second"));
+        baiduTooltip.add(new TextComponent("Paying allows for more requests per second"));
+        baiduTooltip.add(new TextComponent("Please check the mod page for details"));
     }
 
     private String engine;
-    private TextFieldWidget googleKeyBox;
-    private TextFieldWidget baiduKeyBox;
-    private TextFieldWidget baiduAppIdBox;
+    private EditBox googleKeyBox;
+    private EditBox baiduKeyBox;
+    private EditBox baiduAppIdBox;
 
     EngineGui() {
         super(title, guiHeight, guiWidth);
@@ -69,7 +69,7 @@ public class EngineGui extends CommonGui {
     }
 
     @Override
-    public void render(MatrixStack stack, int x, int y, float tick) {
+    public void render(PoseStack stack, int x, int y, float tick) {
         super.render(stack, x, y, tick);
         drawStringLine(stack, title, new String[]{
                 "Please choose your translation engine",
@@ -77,78 +77,131 @@ public class EngineGui extends CommonGui {
         }, 5);
         switch (engine) {
             case "google":
-                font.drawString(stack, "Cloud platform API key", getLeftMargin(), getYOrigin() + 75, 0x555555);
                 googleKeyBox.render(stack, x, y, tick);
-                font.drawString(stack, "Delete/Leave empty to use the free API", getLeftMargin(), getYOrigin() + 110, 0x555555);
+                baiduKeyBox.active = false;
+                baiduAppIdBox.active = false;
+                baiduKeyBox.visible = false;
+                baiduAppIdBox.visible = false;
+                googleKeyBox.active = true;
+                googleKeyBox.visible = true;
+                font.draw(stack, "Cloud platform API key", getLeftMargin(), getYOrigin() + 75, 0);
+                font.draw(stack, "Delete/Leave empty to use the free API", getLeftMargin(), getYOrigin() + 110, 0);
                 break;
             case "baidu":
-                font.drawString(stack, "Baidu developer App ID", getLeftMargin(), getYOrigin() + 65, 0x555555);
+                baiduKeyBox.active = true;
+                baiduAppIdBox.active = true;
+                baiduKeyBox.visible = true;
+                baiduAppIdBox.visible = true;
+                googleKeyBox.active = false;
+                googleKeyBox.visible = false;
+                font.draw(stack, "Baidu developer App ID", getLeftMargin(), getYOrigin() + 65, 0);
                 baiduAppIdBox.render(stack, x, y, tick);
-                font.drawString(stack, "Baidu API key", getLeftMargin(), getYOrigin() + 95, 0x555555);
+                font.draw(stack, "Baidu API key", getLeftMargin(), getYOrigin() + 95, 0);
                 baiduKeyBox.render(stack, x, y, tick);
                 break;
         }
-        if (this.buttons.get(0).isHovered())
-            func_243308_b(stack, googleTooltip, x, y);
-        if (this.buttons.get(1).isHovered())
-            func_243308_b(stack, baiduTooltip, x, y);
+        Button button0 = null;
+        Button button1 = null;
+        for (int i = 0, j = 0; i < renderables.size(); i++) {
+            if(renderables.get(i) instanceof Button){
+                if(j == 0) button0 = (Button)renderables.get(i);
+                if(j == 1) {
+                    button1 = (Button)renderables.get(i);
+                    break;
+                }
+                j++;
+            }
+        }
+        if (button0 != null && button0.isHoveredOrFocused())
+            renderComponentTooltip(stack, googleTooltip, x, y);
+        if (button1 != null && button1.isHoveredOrFocused())
+            renderComponentTooltip(stack, baiduTooltip, x, y);
 
     }
 
     @Override
     public void init() {
-        getMinecraft().keyboardListener.enableRepeatEvents(true);
-        this.googleKeyBox = new TextFieldWidget(this.font, getLeftMargin(), getYOrigin() + 90, guiWidth - 10, 15, null);
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
+        this.googleKeyBox = new EditBox(this.font, getLeftMargin(), getYOrigin() + 90, guiWidth - 10, 15, null);
         googleKeyBox.setCanLoseFocus(true);
-        googleKeyBox.setMaxStringLength(84);
-        googleKeyBox.setEnableBackgroundDrawing(true);
-        googleKeyBox.setText(ConfigManager.config.googleKey.get());
-        this.children.add(googleKeyBox);
-        this.baiduAppIdBox = new TextFieldWidget(this.font, getLeftMargin(), getYOrigin() + 75, guiWidth - 10, 15, null) {
+        googleKeyBox.setMaxLength(84);
+        googleKeyBox.setBordered(true);
+        googleKeyBox.setValue(ConfigManager.config.googleKey.get());
+        addRenderableWidget(googleKeyBox);
+        this.baiduAppIdBox = new EditBox(this.font, getLeftMargin(), getYOrigin() + 75, guiWidth - 10, 15, null) {
             @Override
             public void onClick(double mouseX, double mouseY) {
-                baiduKeyBox.setFocused2(false);
-                super.onClick(mouseX, mouseY);
+                baiduKeyBox.setFocus(false);
+                super.clicked(mouseX, mouseY);
             }
         };
         baiduAppIdBox.setCanLoseFocus(true);
-        baiduAppIdBox.setMaxStringLength(20);
-        baiduAppIdBox.setEnableBackgroundDrawing(true);
-        baiduAppIdBox.setText(ConfigManager.config.baiduAppId.get());
-        this.children.add(baiduAppIdBox);
-        this.baiduKeyBox = new TextFieldWidget(this.font, getLeftMargin(), getYOrigin() + 105, guiWidth - 10, 15, null) {
+        baiduAppIdBox.setMaxLength(20);
+        baiduAppIdBox.setBordered(true);
+        baiduAppIdBox.setValue(ConfigManager.config.baiduAppId.get());
+        addRenderableWidget(baiduAppIdBox);
+        this.baiduKeyBox = new EditBox(this.font, getLeftMargin(), getYOrigin() + 105, guiWidth - 10, 15, null) {
             @Override
             public void onClick(double mouseX, double mouseY) {
                 super.onClick(mouseX, mouseY);
-                baiduAppIdBox.setFocused2(false);
+                baiduAppIdBox.setFocus(false);
             }
         };
         baiduKeyBox.setCanLoseFocus(true);
-        baiduKeyBox.setEnableBackgroundDrawing(true);
-        baiduKeyBox.setMaxStringLength(24);
-        baiduKeyBox.setText(ConfigManager.config.baiduKey.get());
-        this.children.add(baiduKeyBox);
+        baiduKeyBox.setBordered(true);
+        baiduKeyBox.setMaxLength(24);
+        baiduKeyBox.setValue(ConfigManager.config.baiduKey.get());
+        addRenderableWidget(baiduKeyBox);
 
-        addButton(new Button(getLeftMargin(), getYOrigin() + 40, guiWidth / 2 - 10, regularButtonHeight, new StringTextComponent("Google"), (button) -> {
+        addRenderableWidget(new Button(getLeftMargin(), getYOrigin() + 40, guiWidth / 2 - 10, regularButtonHeight, new TextComponent("Google"), (button) -> {
             button.active = false;
-            this.buttons.get(1).active = true;
+            Button button1 = null;
+            for (int i = 0, j = 0; i < renderables.size(); i++) {
+                if(renderables.get(i) instanceof Button){
+                    if(j == 1) {
+                        button1 = (Button)renderables.get(i);
+                        break;
+                    }
+                    j++;
+                }
+            }
+            if(button1 != null) button1.active = true;
             engine = "google";
         }));
-        addButton(new Button(getRightMargin(guiWidth / 2 - 5), getYOrigin() + 40, guiWidth / 2 - 10, regularButtonHeight, new StringTextComponent("Baidu"), (button) -> {
+        addRenderableWidget(new Button(getRightMargin(guiWidth / 2 - 5), getYOrigin() + 40, guiWidth / 2 - 10, regularButtonHeight, new TextComponent("Baidu"), (button) -> {
             button.active = false;
-            this.buttons.get(0).active = true;
+            Button button0 = null;
+	        for (net.minecraft.client.gui.components.Widget renderable : renderables) {
+		        if (renderable instanceof Button) {
+			        button0 = (Button) renderable;
+			        break;
+		        }
+	        }
+            if(button0 != null) button0.active = true;
             engine = "baidu";
         }));
-        addButton(new Button(getRightMargin(regularButtonWidth), getYOrigin() + guiHeight - regularButtonHeight - 5, regularButtonWidth, regularButtonHeight, new StringTextComponent("Apply and close"),
+        addRenderableWidget(new Button(getRightMargin(regularButtonWidth), getYOrigin() + guiHeight - regularButtonHeight - 5, regularButtonWidth, regularButtonHeight, new TextComponent("Apply and close"),
                 (button) -> this.applyKey()));
-        addButton(new Button(getRightMargin(regularButtonWidth) - regularButtonWidth - 5, getYOrigin() + guiHeight - regularButtonHeight - 5, regularButtonWidth, regularButtonHeight, new StringTextComponent("Back"),
+        addRenderableWidget(new Button(getRightMargin(regularButtonWidth) - regularButtonWidth - 5, getYOrigin() + guiHeight - regularButtonHeight - 5, regularButtonWidth, regularButtonHeight, new TextComponent("Back"),
                 (button) -> this.configGui()));
+        Button button0 = null;
+        Button button1 = null;
+        for (int i = 0, j = 0; i < renderables.size(); i++) {
+            if(renderables.get(i) instanceof Button){
+                if(j == 0) button0 = (Button)renderables.get(i);
+                if(j == 1) {
+                    button1 = (Button)renderables.get(i);
+                    break;
+                }
+                j++;
+            }
+        }
         switch (engine) {
             case "google":
-                this.buttons.get(0).active = false;
+                if(button0 != null) button0.active = true;
                 break;
             case "baidu":
-                this.buttons.get(1).active = false;
+                if(button1 != null) button1.active = true;
                 break;
         }
     }
@@ -156,27 +209,49 @@ public class EngineGui extends CommonGui {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifier) {
         if (keyCode == GLFW.GLFW_KEY_E && !this.googleKeyBox.isFocused()) {
-            getMinecraft().keyboardListener.enableRepeatEvents(false);
-            getMinecraft().displayGuiScreen(null);
+            getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
+            getMinecraft().setScreen(null);
             return false;
         }
         return super.keyPressed(keyCode, scanCode, modifier);
     }
 
     private void configGui() {
-        getMinecraft().keyboardListener.enableRepeatEvents(false);
-        getMinecraft().displayGuiScreen(new ConfigGui());
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
+        getMinecraft().setScreen(new ConfigGui());
     }
 
     private void applyKey() {
-        getMinecraft().keyboardListener.enableRepeatEvents(true);
-        ConfigManager.config.googleKey.set(googleKeyBox.getText());
-        ConfigManager.config.baiduAppId.set(baiduAppIdBox.getText());
-        ConfigManager.config.baiduKey.set(baiduKeyBox.getText());
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
+        ConfigManager.config.googleKey.set(googleKeyBox.getValue());
+        ConfigManager.config.baiduAppId.set(baiduAppIdBox.getValue());
+        ConfigManager.config.baiduKey.set(baiduKeyBox.getValue());
         ConfigManager.config.translationEngine.set(engine);
         ConfigManager.saveConfig();
         Log.logger.info("Saved engine options");
-        ChatUtil.printChatMessage(true, "New translation engine options have been applied.", TextFormatting.WHITE);
-        getMinecraft().displayGuiScreen(null);
+        ChatUtil.printChatMessage(true, "New translation engine options have been applied.", ChatFormatting.WHITE);
+        getMinecraft().setScreen(null);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        // 点击 headerField 区域时转移焦点
+        if (googleKeyBox.isMouseOver(mouseX, mouseY)) {
+            googleKeyBox.setFocus(true);
+            googleKeyBox.setFocus(false); // 移除其他框的焦点
+        }
+
+        // 点击 messageField 区域时同理
+        if (baiduKeyBox.isMouseOver(mouseX, mouseY)) {
+            baiduKeyBox.setFocus(true);
+            baiduKeyBox.setFocus(false);
+        }
+
+        if (baiduAppIdBox.isMouseOver(mouseX, mouseY)) {
+            baiduAppIdBox.setFocus(true);
+            baiduAppIdBox.setFocus(false);
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 }

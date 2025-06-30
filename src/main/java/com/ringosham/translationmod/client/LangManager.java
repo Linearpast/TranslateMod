@@ -20,7 +20,7 @@ package com.ringosham.translationmod.client;
 import com.google.gson.Gson;
 import com.ringosham.translationmod.TranslationMod;
 import com.ringosham.translationmod.client.types.Language;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

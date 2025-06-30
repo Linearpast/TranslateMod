@@ -5,42 +5,40 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader = "javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion = "[33,)" #mandatory (28 is current forge version)
-license = "Licensed under GPL version 3"
+loaderVersion = "${loader_version_range}" #mandatory (28 is current forge version)
+license = "${mod_license}"
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL = "https://github.com/ringosham/TranslateMod/issues" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
-modId = "translationmod" #mandatory
+modId = "${mod_id}" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version = "6.0" #mandatory
+version = "${mod_version}" #mandatory
 # A display name for the mod
-displayName = "Real time translation mod" #mandatory
+displayName = "${mod_name}" #mandatory
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL = "http://minecraft.curseforge.com/projects/real-time-chat-translation-mod" #optional
 # A text field displayed in the mod UI
-authors = "Ringosham" #optional
+authors = "${mod_authors}" #optional
 # The description text for the mod (multi line!) (#mandatory)
-description = '''
-This mod translate your Minecraft chat in real time! Translation results are powered by Google.
-'''
+description = '''${mod_description}'''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.examplemod]] #optional
+[[dependencies."${mod_id}"]] #optional
 # the modid of the dependency
 modId = "forge" #mandatory
 # Does this dependency have to exist - if not, ordering below must be specified
 mandatory = true #mandatory
 # The version range of the dependency
-versionRange = "[33,)" #mandatory
+versionRange = "${forge_version_range}" #mandatory
 # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
 ordering = "NONE"
 # Side this dependency is applied on - BOTH, CLIENT or SERVER
 side = "BOTH"
 # Here's another dependency
-[[dependencies.examplemod]]
+[[dependencies."${mod_id}"]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.16.4]"
+versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"

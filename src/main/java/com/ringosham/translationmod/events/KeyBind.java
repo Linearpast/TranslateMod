@@ -1,14 +1,14 @@
 package com.ringosham.translationmod.events;
 
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraft.client.KeyMapping;
+import net.minecraftforge.client.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyBind {
-    static KeyBinding translateKey;
+    static KeyMapping translateKey;
 
     public static void keyInit() {
-        translateKey = new KeyBinding("Translator menu", GLFW.GLFW_KEY_Y, "key.categories.multiplayer");
+        translateKey = new KeyMapping("key.translation.settings", GLFW.GLFW_KEY_Y, "Translate mod");
         ClientRegistry.registerKeyBinding(translateKey);
     }
 }

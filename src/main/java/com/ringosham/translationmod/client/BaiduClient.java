@@ -50,11 +50,8 @@ public class BaiduClient extends RESTClient {
         Map<String, String> queryParam = new HashMap<>();
         String encodedMessage = null;
         //Percent encode message
-        try {
-            encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException ignored) {
-        }
-        //Query message
+	    encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
+	    //Query message
         queryParam.put("q", encodedMessage);
         //Language codes from Baidu does not follow International standards at all
         //From language

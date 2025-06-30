@@ -1,6 +1,6 @@
 package com.ringosham.translationmod.translate.types;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 public class SignText {
     private String text;

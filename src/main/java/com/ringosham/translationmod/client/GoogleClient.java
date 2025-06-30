@@ -48,11 +48,8 @@ public class GoogleClient extends RESTClient {
         Map<String, String> queryParam = new HashMap<>();
         String encodedMessage = null;
         //Percent encode message
-        try {
-            encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException ignored) {
-        }
-        //Necessary query parameters to trick Google translate
+	    encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
+	    //Necessary query parameters to trick Google translate
         queryParam.put("client", "gtx");
         queryParam.put("sl", from.getGoogleCode());
         queryParam.put("tl", to.getGoogleCode());
