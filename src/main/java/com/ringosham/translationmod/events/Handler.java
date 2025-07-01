@@ -1,10 +1,10 @@
 package com.ringosham.translationmod.events;
 
-import com.mojang.math.Vector3d;
 import com.ringosham.translationmod.client.LangManager;
 import com.ringosham.translationmod.common.ChatUtil;
 import com.ringosham.translationmod.common.ConfigManager;
 import com.ringosham.translationmod.common.Log;
+import com.ringosham.translationmod.gui.CommonGui;
 import com.ringosham.translationmod.gui.TranslateGui;
 import com.ringosham.translationmod.translate.SignTranslate;
 import com.ringosham.translationmod.translate.Translator;
@@ -14,52 +14,27 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.event.ScreenOpenEvent;
-import net.minecraftforge.client.settings.KeyBindingMap;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.util.Objects;
 
 public class Handler {
-    private static Thread readSign;
-    private SignText lastSign;
-    private boolean hintShown = false;
-    private int ticks = 0;
-    private static final Block[] signBlocks = {
-            Blocks.ACACIA_SIGN,
-            Blocks.ACACIA_WALL_SIGN,
-            Blocks.BIRCH_SIGN,
-            Blocks.BIRCH_WALL_SIGN,
-            Blocks.DARK_OAK_SIGN,
-            Blocks.DARK_OAK_WALL_SIGN,
-            Blocks.JUNGLE_SIGN,
-            Blocks.JUNGLE_WALL_SIGN,
-            Blocks.OAK_SIGN,
-            Blocks.OAK_WALL_SIGN,
-            Blocks.SPRUCE_SIGN,
-            Blocks.SPRUCE_WALL_SIGN
-    };
+	private boolean hintShown = false;
 
-    @SubscribeEvent
+	@SubscribeEvent
     public void onGuiOpen(ScreenOpenEvent event) {
         if (event.getScreen() == null) {
             Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(false);
@@ -95,10 +70,13 @@ public class Handler {
         ConfigManager.saveConfig();
     }
 
+
     @SubscribeEvent
     public void onKeybind(InputEvent.KeyInputEvent event) {
-        if (KeyBind.translateKey.consumeClick())
+        if (KeyBind.translateKey.isDown() && !(Minecraft.getInstance().screen instanceof CommonGui)){
             Minecraft.getInstance().setScreen(new TranslateGui());
+            event.setResult(Event.Result.ALLOW);
+        }
     }
 
 
@@ -113,12 +91,10 @@ public class Handler {
                 Level level = event.getPlayer().level;
                 BlockPos blockPos = hitVec.getBlockPos();
                 BlockState blockState = level.getBlockState(blockPos);
-                for (Block signBlock : signBlocks) {
-                    if(blockState.is(signBlock)){
-                        SignTranslate signThread = getSignThread(level, blockPos);
-                        if(signThread != null){
-                            signThread.start();
-                        }
+                if(blockState.getBlock() instanceof SignBlock){
+                    SignTranslate signThread = getSignThread(level, blockPos);
+                    if(signThread != null){
+                        signThread.start();
                     }
                 }
             }
@@ -137,7 +113,7 @@ public class Handler {
         text = new StringBuilder(text.toString().replaceAll("§(.)", ""));
         if (text.isEmpty())
             return null;
-        lastSign = new SignText();
+	    SignText lastSign = new SignText();
         lastSign.setSign(text.toString(), pos);
         return new SignTranslate(text.toString(), pos);
     }

@@ -26,13 +26,20 @@ public class TranslateGui extends CommonGui {
     private EditBox headerField;
     private EditBox messageField;
 
+    static boolean flag;
+
     public TranslateGui() {
         super(title, guiHeight, guiWidth);
+        flag = true;
     }
 
     @Override
     public void render(PoseStack stack, int x, int y, float tick) {
         super.render(stack, x, y, tick);
+        if (flag) {
+            messageField.setValue("");
+            flag = false;
+        }
         font.draw(stack, title, getLeftMargin(), getTopMargin(), 0x555555);
         font.draw(stack, "Enter the command/prefix here (Optional)", getLeftMargin(), getTopMargin() + 10, 0x555555);
         font.draw(stack, "Enter your message here (Enter to send)", getLeftMargin(), getTopMargin() + 40, 0x555555);
@@ -52,7 +59,6 @@ public class TranslateGui extends CommonGui {
         messageField.setBordered(true);
         addWidget(headerField);
         addWidget(messageField);
-        getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
         addRenderableWidget(new Button(getRightMargin(regularButtonWidth), getYOrigin() + guiHeight - 10 - regularButtonHeight * 2, regularButtonWidth, regularButtonHeight, new TextComponent("Settings"),
                 (button) -> this.configGui()));
         addRenderableWidget(new Button(getRightMargin(regularButtonWidth), getYOrigin() + guiHeight - 5 - regularButtonHeight, regularButtonWidth, regularButtonHeight, new TextComponent("Close"),
@@ -63,6 +69,9 @@ public class TranslateGui extends CommonGui {
                     ChatUtil.printCredits();
                     this.exitGui();
                 }));
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
+        this.setFocused(messageField);
+        messageField.setFocus(true);
     }
 
     private void retranslateGui() {
@@ -86,7 +95,7 @@ public class TranslateGui extends CommonGui {
             exitGui();
             Thread translate = new SelfTranslate(this.messageField.getValue(), this.headerField.getValue());
             translate.start();
-            return false;
+            return true;
         }
         if (keyCode == GLFW.GLFW_KEY_E && !this.messageField.isFocused() && !this.headerField.isFocused()) {
             exitGui();
