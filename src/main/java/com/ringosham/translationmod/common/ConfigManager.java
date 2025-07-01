@@ -40,7 +40,7 @@ public class ConfigManager {
     public static final ClientConfig config;
     public static final ForgeConfigSpec configSpec;
     public static final String[] defaultRegex = {
-            "<(\\w+)> (?!\\[UseTranslateMod\\])"//Default
+            "<(\\w+)> (?!\\[By Translator\\] )"//Default
     };
     public static final int[] defaultGroups = {
             1
