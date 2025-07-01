@@ -78,6 +78,9 @@ public class ConfigGui extends CommonGui {
     private boolean italic;
     private boolean underline;
     private boolean translateSign;
+    private boolean modAble;
+
+    Button modAbleButton;
 
     ConfigGui() {
         super(title, guiHeight, guiWidth);
@@ -95,6 +98,7 @@ public class ConfigGui extends CommonGui {
         this.underline = instance.underline;
         this.translateSign = instance.translateSign;
         this.isTransition = true;
+        this.modAble = instance.modAble;
         if (lang != null) {
             switch (langSelect) {
                 case 0:
@@ -183,6 +187,7 @@ public class ConfigGui extends CommonGui {
             bold = ConfigManager.config.bold.get();
             italic = ConfigManager.config.italic.get();
             underline = ConfigManager.config.underline.get();
+            modAble = ConfigManager.config.modAble.get();
             translateSign = ConfigManager.config.translateSign.get();
             targetLang = LangManager.getInstance().findLanguageFromName(ConfigManager.config.targetLanguage.get());
             selfLang = LangManager.getInstance().findLanguageFromName(ConfigManager.config.selfLanguage.get());
@@ -224,6 +229,12 @@ public class ConfigGui extends CommonGui {
                 }));
         addRenderableWidget(new Button(getRightMargin(regularButtonWidth), getYOrigin() + 20, regularButtonWidth, regularButtonHeight, new TextComponent("View / Add"),
                 (button) -> this.regexGui()));
+        modAbleButton = new Button(getRightMargin(regularButtonWidth), getYOrigin() + guiHeight - 15 - regularButtonHeight * 3, regularButtonWidth, regularButtonHeight, new TextComponent(modAble ? ChatFormatting.GREEN + "Translate Able" : ChatFormatting.RED + "Translate Able"),
+                (button) -> {
+                    modAble = !modAble;
+                    this.toggleButtonBool(modAble, button);
+                });
+        addRenderableWidget(modAbleButton);
     }
 
     private void applySettings() {
@@ -236,6 +247,7 @@ public class ConfigGui extends CommonGui {
         ConfigManager.config.italic.set(italic);
         ConfigManager.config.underline.set(underline);
         ConfigManager.config.translateSign.set(translateSign);
+        ConfigManager.config.modAble.set(modAble);
         ConfigManager.saveConfig();
         ChatUtil.printChatMessage(true, "Settings applied.", ChatFormatting.WHITE);
         exitGui();
@@ -294,6 +306,7 @@ public class ConfigGui extends CommonGui {
         italic = false;
         underline = false;
         translateSign = true;
+        modAble = true;
         targetLang = LangManager.getInstance().findLanguageFromName("English");
         selfLang = targetLang;
         speakAsLang = LangManager.getInstance().findLanguageFromName("Japanese");
@@ -339,5 +352,6 @@ public class ConfigGui extends CommonGui {
         if(button10 != null) {
             button10.setMessage(new TextComponent(underline ? "\u00a7a" : "\u00a7c" + ChatFormatting.UNDERLINE + "U"));
         }
+        modAbleButton.setMessage(new TextComponent(ChatFormatting.GREEN + "Translate Able"));
     }
 }

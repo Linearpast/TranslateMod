@@ -111,6 +111,7 @@ public class ConfigManager {
             config.italic.set(false);
             config.underline.set(false);
             config.translateSign.set(true);
+            config.modAble.set(true);
             config.color.set("gray");
             config.regexList.set(Arrays.asList(defaultRegex));
             config.groupList.set(Ints.asList(defaultGroups));
@@ -136,6 +137,7 @@ public class ConfigManager {
         config.baiduKey.save();
         config.baiduAppId.save();
         config.translationEngine.save();
+        config.modAble.save();
         validateConfig();
     }
 
@@ -155,11 +157,13 @@ public class ConfigManager {
         public final ConfigValue<String> baiduAppId;
         public final ConfigValue<String> baiduKey;
         public final ConfigValue<String> translationEngine;
+        public final BooleanValue modAble;
         final IntValue configMinVersion;
 
 
         ClientConfig(ForgeConfigSpec.Builder builder) {
             builder.comment("Real time translation mod configs").push(TranslationMod.MODID);
+            modAble = builder.comment("switch").define("modAble", true);
             configMinVersion = builder.comment("Config version. DO NOT CHANGE.").defineInRange("configMinVersion", 1, 0, Integer.MAX_VALUE);
             targetLanguage = builder.comment("Target language to translationmod.mixins.json for the chat").define("targetLanguage", "English", lang -> validateLang((String) lang));
             selfLanguage = builder.comment("The language the user types").define("selfLanguage", "English", lang -> validateLang((String) lang));

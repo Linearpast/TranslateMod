@@ -68,6 +68,7 @@ public class Handler {
 
     @SubscribeEvent
     public void chatReceived(ClientChatReceivedEvent event) {
+        if(!ConfigManager.config.modAble.get()) return;
         Component eventMessage = event.getMessage();
         String message = eventMessage.getString().replaceAll("§(.)", "");
         Thread translate = new Translator(message, null, LangManager.getInstance().findLanguageFromName(ConfigManager.config.targetLanguage.get()));
@@ -103,7 +104,7 @@ public class Handler {
 
     @SubscribeEvent
     public void processSign(PlayerInteractEvent.RightClickBlock event) {
-        if(ConfigManager.config.translateSign.get()
+        if(ConfigManager.config.translateSign.get() && ConfigManager.config.modAble.get()
                 && event.getHand() == InteractionHand.MAIN_HAND
                 && event.getSide().isClient())
         {
