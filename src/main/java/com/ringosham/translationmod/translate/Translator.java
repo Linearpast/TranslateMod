@@ -30,7 +30,6 @@ import net.minecraft.ChatFormatting;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -146,7 +145,7 @@ public class Translator extends Thread {
                 break;
             case 429:
                 Log.logger.warn("Google denied access to translation API. Pausing translation for 5 minutes");
-                ChatUtil.printChatMessage(true, "Google translate has stopped responding. Pausing translations", ChatFormatting.YELLOW);
+                ChatUtil.printChatMessage(true, "Google translationmod.mixins.json has stopped responding. Pausing translations", ChatFormatting.YELLOW);
                 break;
             case 403:
                 Log.logger.error("Google API >> Exceeded API quota / User rate limit reached");
@@ -160,14 +159,14 @@ public class Translator extends Thread {
                 break;
             case 500:
                 Log.logger.error("Google API >> Failed to determine source language: " + transRequest.getMessage());
-                ChatUtil.printChatMessage(true, "Server side failure. Cannot translate", ChatFormatting.RED);
+                ChatUtil.printChatMessage(true, "Server side failure. Cannot translationmod.mixins.json", ChatFormatting.RED);
                 break;
             case 52001:
                 Log.logger.error("Baidu API >> Connection timeout");
                 break;
             case 52002:
                 Log.logger.error("Baidu API >> Server side failure");
-                ChatUtil.printChatMessage(true, "Server side failure. Cannot translate", ChatFormatting.RED);
+                ChatUtil.printChatMessage(true, "Server side failure. Cannot translationmod.mixins.json", ChatFormatting.RED);
                 break;
             case 52003:
                 Log.logger.error("Baidu API >> Unauthorized request");
@@ -194,7 +193,7 @@ public class Translator extends Thread {
                 break;
             case 58001:
                 Log.logger.error("Baidu API >> Translation direction not supported");
-                ChatUtil.printChatMessage(true, "Cannot translate from " + transRequest.getFrom().getName() + " to " + transRequest.getTo().getName(), ChatFormatting.RED);
+                ChatUtil.printChatMessage(true, "Cannot translationmod.mixins.json from " + transRequest.getFrom().getName() + " to " + transRequest.getTo().getName(), ChatFormatting.RED);
                 break;
             case 58002:
                 Log.logger.error("Baidu API >> Translation service is not enabled");
@@ -281,40 +280,5 @@ public class Translator extends Thread {
             translationLog.pollFirst();
     }
 
-    public static class TranslationLog {
-        private final String sender;
-        private final String message;
-        private final TranslateResult result;
-
-        public TranslationLog(String sender, String message, TranslateResult result) {
-            this.sender = sender;
-            this.message = message;
-            this.result = result;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public String getSender() {
-            return sender;
-        }
-
-        public TranslateResult getResult() {
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            TranslationLog that = (TranslationLog) o;
-            return Objects.equals(sender, that.sender) && Objects.equals(message, that.message) && Objects.equals(result, that.result);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(sender, message, result);
-        }
-    }
+    public record TranslationLog(String sender, String message, TranslateResult result) {}
 }

@@ -42,8 +42,8 @@ public class RetranslateGui extends CommonGui {
             TextButton button = (TextButton) renderables.get(i);
             if (button.isHoveredOrFocused()) {
                 List<Component> hoverText = new ArrayList<>();
-                hoverText.add(new TextComponent("Sender: " + logs.get(i).getSender()));
-                hoverText.add(new TextComponent("Message: " + logs.get(i).getMessage()));
+                hoverText.add(new TextComponent("Sender: " + logs.get(i).sender()));
+                hoverText.add(new TextComponent("Message: " + logs.get(i).message()));
                 //func_243308_b(MatrixStack, List<ITextComponent>, int, int) -> renderTooltip(...)
                 renderComponentTooltip(stack, hoverText, x, y);
             }
@@ -54,13 +54,13 @@ public class RetranslateGui extends CommonGui {
     public void init() {
         int offset = 0;
         for (Translator.TranslationLog log : logs) {
-            String buttonText = log.getMessage();
+            String buttonText = log.message();
             if (getTextWidth(buttonText) > guiWidth - 15) {
                 buttonText = buttonText + "...";
                 while (getTextWidth(buttonText) > guiWidth - 15)
                     buttonText = buttonText.substring(0, buttonText.length() - 4) + "...";
             }
-            addRenderableWidget(new TextButton(getLeftMargin(), getTopMargin() + 40 + offset, getTextWidth(buttonText), new TextComponent(buttonText), (button) -> selectLanguage(log.getSender(), log.getMessage()), 0));
+            addRenderableWidget(new TextButton(getLeftMargin(), getTopMargin() + 40 + offset, getTextWidth(buttonText), new TextComponent(buttonText), (button) -> selectLanguage(log.sender(), log.message()), 0));
             offset += 10;
         }
     }

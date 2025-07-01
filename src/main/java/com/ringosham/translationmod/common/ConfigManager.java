@@ -40,45 +40,10 @@ public class ConfigManager {
     public static final ClientConfig config;
     public static final ForgeConfigSpec configSpec;
     public static final String[] defaultRegex = {
-            "<(\\w+)> ", //Default
-            "\\(From (\\w+)\\):( )?", //PM
-            "(\\w+) whispers ", //PM
-            "(\\[\\S+\\]( )?){0,2}(\\w+)( )?\u00BB( )?", //The Hive, etc.
-            "(\\[\\S+\\]( )?){0,2}(\\w+)( )?:( )?(Eye\\[\\d\\] )?", //Shotbow, MineZ, etc.
-            //Screw you Mineplex for the most complicated chat system
-            "\\d{1,3} (\\w+ )?(\\w+) ", //Mineplex survival games
-            "Dead (\\d+ )?(\\w+ )?(\\w+) ", //Other Mineplex games
-            "(\\w+) > \\w+ ", //Mineplex PM
-            "(\\w+) whispers to you: ", //Default PM
-            "(\\(Team\\) )?(\\[\\w+\\] ){1,2}(\\w+): ", //Annihilation
-            "(\\w+ )?\\w+: (\\w+) > ", //Pika network. Thanks for the shout out!
-            "\\[Lvl \\d+\\] \u25b6 (\\w+: )?(\\w+) > ",
-            "\u25b6 \\[\\d+\\] (\\w+: )?(\\w+) > ",
-            "\u25b6 (\\w+: )?(\\w+) > ",
-            "(\\[\\w+\\])?\\[Level \\d+\\] \\[(\\w+)\\] ",  //Frostcraft
-            "(\\w+) tells you: ", //Frostcraft PM
-            "\\[(\\w+) -> \\w+\\] ", //Default Bukkit PM? Essential?
-            "(\\w+ )?(\\w+-)?(\\w+)(\\*)?(\\+){0,2}:", //Mineyourmind(Specifically the forum members). Thanks for the shout out!
+            "<(\\w+)> (?!\\[UseTranslateMod\\])"//Default
     };
     public static final int[] defaultGroups = {
-            1,
-            1,
-            1,
-            3,
-            3,
-            2,
-            3,
-            1,
-            1,
-            3,
-            2,
-            2,
-            2,
-            2,
-            2,
-            1,
-            1,
-            3
+            1
     };
     private static final String[] engines = {"google", "baidu"};
     //In case there are future updates that drastically change how the mod works. This variable would be here to check if the configs are out of date.
@@ -196,9 +161,9 @@ public class ConfigManager {
         ClientConfig(ForgeConfigSpec.Builder builder) {
             builder.comment("Real time translation mod configs").push(TranslationMod.MODID);
             configMinVersion = builder.comment("Config version. DO NOT CHANGE.").defineInRange("configMinVersion", 1, 0, Integer.MAX_VALUE);
-            targetLanguage = builder.comment("Target language to translate for the chat").define("targetLanguage", "English", lang -> validateLang((String) lang));
+            targetLanguage = builder.comment("Target language to translationmod.mixins.json for the chat").define("targetLanguage", "English", lang -> validateLang((String) lang));
             selfLanguage = builder.comment("The language the user types").define("selfLanguage", "English", lang -> validateLang((String) lang));
-            speakAsLanguage = builder.comment("The language the user wants their message to translate to").define("speakAsLanguage", "Japanese", lang -> validateLang((String) lang));
+            speakAsLanguage = builder.comment("The language the user wants their message to translationmod.mixins.json to").define("speakAsLanguage", "Japanese", lang -> validateLang((String) lang));
             bold = builder.comment("Bold the translated message").define("bold", false);
             italic = builder.comment("Italic the translated message").define("italic", false);
             underline = builder.comment("Underline the translated message").define("underline", false);

@@ -57,7 +57,7 @@ public class GooglePaidClient extends RESTClient {
         String encodedMessage = null;
         //Percent encode message
 	    encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
-	    //The query supports multiline using an array, however we only have one line to text to translate.
+	    //The query supports multiline using an array, however we only have one line to text to translationmod.mixins.json.
         queryParam.put("q", encodedMessage);
         //Query parameters
         queryParam.put("target", to.getGoogleCode());

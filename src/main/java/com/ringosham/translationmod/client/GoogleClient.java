@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GoogleClient extends RESTClient {
-    //Google translate is a paid service. This is the secret free API for use of the web Google translate
+    //Google translationmod.mixins.json is a paid service. This is the secret free API for use of the web Google translationmod.mixins.json
     private static boolean accessDenied = false;
 
     public GoogleClient() {
@@ -49,7 +49,7 @@ public class GoogleClient extends RESTClient {
         String encodedMessage = null;
         //Percent encode message
 	    encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
-	    //Necessary query parameters to trick Google translate
+	    //Necessary query parameters to trick Google translationmod.mixins.json
         queryParam.put("client", "gtx");
         queryParam.put("sl", from.getGoogleCode());
         queryParam.put("tl", to.getGoogleCode());
@@ -71,7 +71,7 @@ public class GoogleClient extends RESTClient {
                 }
             }
             String responseString = response.getEntity();
-            //This secret API is specifically made for Google translate. So the response contains lots of useless information.
+            //This secret API is specifically made for Google translationmod.mixins.json. So the response contains lots of useless information.
             //Each sentence translated is divided into separate JSON arrays.
             Gson gson = new GsonBuilder().setLenient().create();
             JsonArray json = gson.fromJson(responseString, JsonArray.class);

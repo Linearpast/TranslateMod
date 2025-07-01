@@ -23,6 +23,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.ringosham.translationmod.TranslationMod;
 import com.ringosham.translationmod.common.ChatUtil;
 import com.ringosham.translationmod.common.ConfigManager;
+import com.ringosham.translationmod.mixin.ChatComponentField;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.GuiMessage;
@@ -151,6 +152,12 @@ public class RegexGui extends CommonGui {
 
     RegexGui() {
         super(title, guiHeight, guiWidth);
+        index = Math.max(regexes.size() - 1, 0);
+        if(regexes.isEmpty()) {
+            regexes.add(ConfigManager.defaultRegex[0]);
+            groups.clear();
+            groups.add(1);
+        }
     }
 
     @Override
@@ -413,9 +420,12 @@ public class RegexGui extends CommonGui {
     @SuppressWarnings("ConstantConditions")
     private List<String> getChatLog() {
         //Chat log is a private field.
-        List<GuiMessage<Component>> fullChatLog = ObfuscationReflectionHelper.getPrivateValue(ChatComponent.class, Minecraft.getInstance().gui.getChat(), "allMessages");
-        //For 1.7.10 debug use.
-        //List<ChatLine> fullChatLog = ObfuscationReflectionHelper.getPrivateValue(GuiNewChat.class, Minecraft.getInstance().ingameGUI.getChatGUI(), "chatLines");
+        List<GuiMessage<Component>> fullChatLog;
+        try {
+            fullChatLog = ((ChatComponentField)Minecraft.getInstance().gui.getChat()).getAllMessages();
+        }catch (Exception ignored){
+            fullChatLog = new ArrayList<>();
+        }
         List<String> chatLog = new ArrayList<>();
         for (int i = 0; i < Math.min(fullChatLog.size(), 20); i++) {
             //func_238169_a_() --> getComponent()

@@ -33,7 +33,7 @@ import java.util.List;
 public class LangManager {
 
     //Loads the language list from local json
-    //Technically the cloud translate API provides an endpoint to tell what languages are available, but even that requires an API key and payment info.
+    //Technically the cloud translationmod.mixins.json API provides an endpoint to tell what languages are available, but even that requires an API key and payment info.
     private static final ResourceLocation langLocation = new ResourceLocation(TranslationMod.MODID, "lang.json");
     private static LangManager instance;
     private static Language autoLang;

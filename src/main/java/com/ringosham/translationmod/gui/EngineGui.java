@@ -46,9 +46,9 @@ public class EngineGui extends CommonGui {
         String modName = ModList.get().getModContainerById(TranslationMod.MODID).get().getModInfo().getDisplayName();
         title = modName + " - Engine options";
         googleTooltip.add(new TextComponent("By default, you are using the \"free\" version of Google translation"));
-        googleTooltip.add(new TextComponent("This is the same API the Google translate website is using"));
+        googleTooltip.add(new TextComponent("This is the same API the Google translationmod.mixins.json website is using"));
         googleTooltip.add(new TextComponent("However, too many requests and Google will block you for a few minutes"));
-        googleTooltip.add(new TextComponent("Cloud translation API is the paid version of Google translate"));
+        googleTooltip.add(new TextComponent("Cloud translation API is the paid version of Google translationmod.mixins.json"));
         googleTooltip.add(new TextComponent("Please check the mod page for details"));
         baiduTooltip.add(new TextComponent("If you cannot use Google due to country restrictions,"));
         baiduTooltip.add(new TextComponent("Baidu is your second option"));

@@ -42,6 +42,6 @@ public class SelfTranslate extends Thread {
         if (translatedMessage == null)
             return;
         //noinspection ConstantConditions
-        Minecraft.getInstance().player.sendMessage(new TextComponent(selfHeader + " " + translatedMessage.getMessage()), Minecraft.getInstance().player.getUUID());
+        Minecraft.getInstance().player.chat(selfHeader + " [UseTranslateMod] >> " + translatedMessage.getMessage());
     }
 }

@@ -50,7 +50,7 @@ public class ConfigGui extends CommonGui {
 
     static {
         selfTooltip.add(new TextComponent("The language you speak in game"));
-        selfTooltip.add(new TextComponent("This will be utilised when you want to translate what you speak"));
+        selfTooltip.add(new TextComponent("This will be utilised when you want to translationmod.mixins.json what you speak"));
         speakAsTooltip.add(new TextComponent("The language your messages will be translated to."));
         speakAsTooltip.add(new TextComponent("After you typed your messages through this mod,"));
         speakAsTooltip.add(new TextComponent("it will be translated to the language you specified"));

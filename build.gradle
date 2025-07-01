@@ -83,10 +83,15 @@ repositories {
     }
 }
 
+mixin {
+    add sourceSets.main, mod_id+".refmap.json"
+    config "${mod_id}.mixins.json"
+    debug.export = true
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-
 }
 
 tasks.named('processResources', ProcessResources).configure {
